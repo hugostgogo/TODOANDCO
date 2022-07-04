@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
     <title>
       {% block title %}
-        Welcome!
+        To Do List app
       {% endblock %}
     </title>
     <link rel="icon"
@@ -43,9 +47,9 @@
           <a href="{{ path('logout') }}" class="pull-right btn btn-danger">
             Se déconnecter
           </a>
-        {% endif %} #}
+        {% endif %}
 
-        {# {% if
+        {% if
           not app.user and 'login' != app.request.attributes.get('_route') %}
           <a href="{{ path('login') }}" class="btn btn-success">Se connecter</a>
         {% endif %} #}
@@ -66,6 +70,7 @@
           {% endfor %}
 
           {% block header_title %}
+
           {% endblock %}
           {% block header_img %}
             <img class="slide-image"
@@ -80,6 +85,7 @@
       <div class="row">
         <div class="col-md-12">
           {% block body %}
+
           {% endblock %}
         </div>
       </div>
