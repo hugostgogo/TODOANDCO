@@ -83,4 +83,11 @@ class Task
 
         return $this;
     }
+
+    public function toggle(): self
+    {
+        $this->isDone = !$this->isDone;
+
+        return $this;
+    }
 }

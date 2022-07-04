@@ -59,6 +59,8 @@ class TaskController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $taskRepository->add($task, true);
 
+            $this->addFlash('success', 'La tâche a été bien été modifiée.');
+
             return $this->redirectToRoute('app_task_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -73,8 +75,26 @@ class TaskController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete'.$task->getId(), $request->request->get('_token'))) {
             $taskRepository->remove($task, true);
+        } else {
+            $this->addFlash('error', 'La tâche n\'a pas été supprimée.');
         }
 
         return $this->redirectToRoute('app_task_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/toggle', name: 'app_task_toggle', methods: ['POST'])]
+    public function toggle(Request $request, Task $task, TaskRepository $taskRepository): Response
+    {
+        if ($this->isCsrfTokenValid('toggle'.$task->getId(), $request->request->get('_token'))) {
+            $taskRepository->toggle($task, true);
+
+            $this->addFlash('success', 'La tâche a été bien été modifiée.');
+        } else {
+            $this->addFlash('error', 'La tâche n\'a pas été modifiée.');
+        }
+
+        return $this->redirectToRoute('app_task_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    
 }
