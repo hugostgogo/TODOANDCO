@@ -22,7 +22,8 @@
                             {% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée{% endif %}
                         </button>
                     </form>
-                    <form action="{{ path('app_task_delete', {'id' : task.id }) }}">
+                    <form action="{{ path('app_task_delete', {'id' : task.id }) }}" method="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ task.id) }}"/>
                         <button class="btn btn-danger btn-sm pull-right">Supprimer</button>
                     </form>
                 </div>

@@ -67,6 +67,7 @@ class TaskController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete'.$task->getId(), $request->request->get('_token'))) {
             $taskRepository->remove($task, true);
+            $this->addFlash('success', 'La tâche a été bien été supprimée.');
         } else {
             $this->addFlash('error', 'La tâche n\'a pas été supprimée.');
         }
