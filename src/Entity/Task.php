@@ -25,6 +25,12 @@ class Task
     #[ORM\Column(type: 'boolean')]
     private $isDone;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->isDone = false;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
