@@ -12,7 +12,7 @@ security:
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+            security: true
         main:
             lazy: true
             provider: app_user_provider
@@ -21,21 +21,26 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
+                default_target_path: app_home
+                use_forward: true            
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_USER: ROLE_ANONYMOUS
+        ROLE_ANONYMOUS: ROLE_ANONYMOUS
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/ , role: ROLE_USER }
-        - { path: ^/users, role: ROLE_ADMIN }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS } # only public users are allowed to access the login path
+        - { path: ^/users, roles: ROLE_ADMIN } # only users with the ROLE_ADMIN role can access the users path
+        - { path: ^/ , roles: IS_AUTHENTICATED_FULLY } # all users can access the root of the site
 
 when@test:
     security:
