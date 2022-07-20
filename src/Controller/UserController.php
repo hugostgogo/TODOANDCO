@@ -15,6 +15,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
+
+    // constructeur
+    public function __construct(UserRepository $userRepository, UserPasswordHasherInterface $hasher)
+    {
+        $this->userRepository = $userRepository;
+        $this->hasher = $hasher;
+    }
+
     #[Route('/users', name: 'app_user_index')]
     public function index(UserRepository $userRepository): Response
     {   
@@ -26,22 +34,24 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/new', name: 'app_user_new')]
-    public function new(Request $request, UserRepository $userRepository, UserPasswordHasherInterface $encoder): Response
+    public function new(Request $request): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
-        
         if ($form->isSubmitted() && $form->isValid()) {
-            // Encrypt password
-            $user->setPassword($encoder->hashPassword($user, $user->getPassword()));
+            
+            // Hash password
+            $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
 
             // add user to database
-            $userRepository->add($user, true);
+            $this->userRepository->add($user, true);
 
+            // add flash message
             $this->addFlash('success', 'L\'utilisateur a été bien été ajouté.');
 
+            // redirect to user index
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -52,16 +62,23 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/{id}/edit', name: 'app_user_edit')]
-    public function edit(Request $request, User $user, UserRepository $userRepository): Response
+    public function edit(Request $request, User $user): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $userRepository->update($user, true);
 
+            // Hash password
+            $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
+
+            // update user in database
+            $this->userRepository->update($user, true);
+
+            // add flash message
             $this->addFlash('success', 'L\'utilisateur a été bien été modifié.');
 
+            // redirect to user index
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
