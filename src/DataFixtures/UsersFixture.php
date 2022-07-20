@@ -32,6 +32,12 @@ class UsersFixture extends Fixture
         ]
     ];
 
+    public const USER_REFERENCES = [
+        'admin',
+        'user',
+        'guest',
+    ];
+
     private $hasher;
 
     public function __construct(UserPasswordHasherInterface $hasher)
@@ -41,20 +47,19 @@ class UsersFixture extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        // create users
         foreach (self::USERS as $userData) {
             $user = new User();
             $user->setUsername($userData['username']);
             $user->setEmail($userData['email']);
             $user->setRoles($userData['roles']);
-
             $user->setPassword($this->hasher->hashPassword($user, $userData['password']));
-
             $manager->persist($user);
-
-            $this->addReference($userData['username'], $user);
+            $this->addReference(self::USER_REFERENCES[array_search($userData['username'], array_column(self::USERS, 'username'))], $user);
         }
 
         $manager->flush();
+
     }
 
 }
