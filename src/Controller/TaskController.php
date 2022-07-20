@@ -65,11 +65,18 @@ class TaskController extends AbstractController
     #[Route('/{id}', name: 'app_task_delete', methods: ['POST'])]
     public function delete(Request $request, Task $task, TaskRepository $taskRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$task->getId(), $request->request->get('_token'))) {
+
+        // only creator can delete task
+        $isOwner = $this->getUser() == $task->getCreator();
+            
+        if ($this->isCsrfTokenValid('delete'.$task->getId(), $request->request->get('_token')) && $isOwner) {
             $taskRepository->remove($task, true);
+
             $this->addFlash('success', 'La tâche a été bien été supprimée.');
+        } else if (!$isOwner) {
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à supprimer cette tâche.');
         } else {
-            $this->addFlash('error', 'La tâche n\'a pas été supprimée.');
+            $this->addFlash('error', 'La tâche n\'a pas pu être supprimée.');
         }
 
         return $this->redirectToRoute('app_task_index', [], Response::HTTP_SEE_OTHER);
